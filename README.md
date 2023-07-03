@@ -27,11 +27,11 @@ To run this project locally, follow these steps:
 1. Make sure you have Flutter SDK installed on your machine. If not, follow the official [Flutter installation guide](https://flutter.dev/docs/get-started/install) to set up Flutter.
 2. Clone this repository to your local machine using the following command:
     ```shell
-    git clone https://github.com/MeherajUlMahmmud/jobboard.git
+    git clone https://github.com/MeherajUlMahmmud/JobBoard.git
     ```
 3. Navigate to the project directory:
     ```shell
-    cd jobboard
+    cd JobBoard
     ```
 4. Fetch the project dependencies by running the following command:
     ```shell
