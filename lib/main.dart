@@ -1,17 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:jobboard/providers/user_provider.dart';
 import 'package:jobboard/screens/auth_screens/LoginScreen.dart';
 import 'package:jobboard/screens/auth_screens/SignUpScreen.dart';
 import 'package:jobboard/screens/home_screen.dart';
+import 'package:jobboard/screens/main_screens/SearchScreen.dart';
 import 'package:jobboard/screens/profile_screens/ProfileScreen.dart';
 import 'package:jobboard/screens/profile_screens/UpdateProfileScreen.dart';
 import 'package:jobboard/screens/utility_screens/AccountSettingsScreen.dart';
 import 'package:jobboard/screens/utility_screens/SettingsScreen.dart';
 import 'package:jobboard/utils/colors.dart';
+import 'package:provider/provider.dart';
 
 import 'screens/utility_screens/SplashScreen.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => UserProvider()),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -79,6 +89,7 @@ class MyApp extends StatelessWidget {
         LoginScreen.routeName: (context) => const LoginScreen(),
         SignUpScreen.routeName: (context) => const SignUpScreen(),
         HomeScreen.routeName: (context) => HomeScreen(),
+        SearchScreen.routeName: (context) => const SearchScreen(),
         ProfileScreen.routeName: (context) => const ProfileScreen(),
         UpdateProfileScreen.routeName: (context) => const UpdateProfileScreen(),
         SettingsScreen.routeName: (context) => const SettingsScreen(),
