@@ -2,12 +2,14 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:jobboard/apis/auth.dart';
+import 'package:jobboard/providers/user_provider.dart';
 import 'package:jobboard/screens/auth_screens/SignUpScreen.dart';
 import 'package:jobboard/screens/home_screen.dart';
 import 'package:jobboard/utils/helper.dart';
 import 'package:jobboard/utils/local_storage.dart';
 import 'package:jobboard/widgets/custom_button.dart';
 import 'package:jobboard/widgets/custom_text_form_field.dart';
+import 'package:provider/provider.dart';
 
 class LoginScreen extends StatefulWidget {
   static const routeName = '/login';
@@ -50,6 +52,11 @@ class _LoginScreenState extends State<LoginScreen> {
       if (data['status'] == 200) {
         await localStorage.writeData('user', data['data']['user']);
         await localStorage.writeData('tokens', data['data']['tokens']);
+
+        Provider.of<UserProvider>(context, listen: false)
+            .setUser(data['data']['user']);
+        Provider.of<UserProvider>(context, listen: false)
+            .setTokens(data['data']['tokens']);
 
         Helper().showSnackBar(context, 'Login Successful', Colors.green);
         setState(() {
