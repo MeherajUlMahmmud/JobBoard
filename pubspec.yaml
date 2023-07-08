@@ -38,6 +38,7 @@ dependencies:
   shared_preferences:
   permission_handler:
   intl:
+  provider:
   image_picker:
   image_cropper:
   url_launcher: ^6.1.5
