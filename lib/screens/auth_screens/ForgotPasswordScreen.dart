@@ -2,36 +2,30 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:jobboard/apis/auth.dart';
-import 'package:jobboard/providers/user_provider.dart';
-import 'package:jobboard/screens/auth_screens/ForgotPasswordScreen.dart';
-import 'package:jobboard/screens/auth_screens/SignUpScreen.dart';
-import 'package:jobboard/screens/home_screen.dart';
+import 'package:jobboard/screens/auth_screens/LoginScreen.dart';
+import 'package:jobboard/screens/auth_screens/OTPScreen.dart';
 import 'package:jobboard/utils/helper.dart';
 import 'package:jobboard/utils/local_storage.dart';
 import 'package:jobboard/widgets/bottom_widget.dart';
 import 'package:jobboard/widgets/custom_button.dart';
 import 'package:jobboard/widgets/custom_text_form_field.dart';
 import 'package:jobboard/widgets/top_widget.dart';
-import 'package:provider/provider.dart';
 
-class LoginScreen extends StatefulWidget {
-  static const routeName = '/login';
-  const LoginScreen({Key? key}) : super(key: key);
+class ForgotPasswordScreen extends StatefulWidget {
+  static const routeName = '/forgot-password';
+  const ForgotPasswordScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   final LocalStorage localStorage = LocalStorage();
 
   TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
 
   String email = '';
-  String password = '';
 
-  bool isObscure = true;
   bool isLoading = false;
 
   final _formKey = GlobalKey<FormState>();
@@ -39,40 +33,32 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void dispose() {
     emailController.dispose();
-    passwordController.dispose();
 
     super.dispose();
   }
 
-  handleLogin() {
-    FocusScope.of(context).unfocus();
-    setState(() {
-      isLoading = true;
-    });
+  handleSubmit() {
+    Navigator.pushNamed(context, OTPScreen.routeName);
+    // FocusScope.of(context).unfocus();
+    // setState(() {
+    //   isLoading = true;
+    // });
 
-    AuthService().loginUser(email, password).then((data) async {
-      print(data);
-      if (data['status'] == 200) {
-        await localStorage.writeData('user', data['data']['user']);
-        await localStorage.writeData('tokens', data['data']['tokens']);
-
-        Provider.of<UserProvider>(context, listen: false)
-            .setUser(data['data']['user']);
-        Provider.of<UserProvider>(context, listen: false)
-            .setTokens(data['data']['tokens']);
-
-        Helper().showSnackBar(context, 'Login Successful', Colors.green);
-        setState(() {
-          isLoading = false;
-        });
-        Navigator.pushReplacementNamed(context, HomeScreen.routeName);
-      } else {
-        setState(() {
-          isLoading = false;
-        });
-        Helper().showSnackBar(context, data['error'], Colors.red);
-      }
-    });
+    // AuthService().requestRestEmail(email).then((data) async {
+    //   print(data);
+    //   if (data['status'] == 200) {
+    //     Helper().showSnackBar(context, 'Login Successful', Colors.green);
+    //     setState(() {
+    //       isLoading = false;
+    //     });
+    //     Navigator.pushReplacementNamed(context, OTPScreen.routeName);
+    //   } else {
+    //     setState(() {
+    //       isLoading = false;
+    //     });
+    //     Helper().showSnackBar(context, data['error'], Colors.red);
+    //   }
+    // });
   }
 
   @override
@@ -81,6 +67,10 @@ class _LoginScreenState extends State<LoginScreen> {
     final screenSize = MediaQuery.of(context).size;
 
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Forgot Password'),
+        centerTitle: true,
+      ),
       body: Stack(
         children: [
           Positioned(
@@ -110,7 +100,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     const SizedBox(height: 20),
                     const Text(
-                      'Welcome back',
+                      'Reset Password',
                       style: TextStyle(
                         fontSize: 30,
                         fontWeight: FontWeight.bold,
@@ -118,13 +108,13 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     const SizedBox(height: 10),
                     const Text(
-                      'Login to continue',
+                      'Enter your email to continue',
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 100),
                     CustomTextFormField(
                       width: width,
                       autofocus: true,
@@ -148,69 +138,28 @@ class _LoginScreenState extends State<LoginScreen> {
                       },
                     ),
                     const SizedBox(height: 5),
-                    CustomTextFormField(
-                      width: width,
-                      controller: passwordController,
-                      labelText: 'Password',
-                      hintText: 'Password',
-                      prefixIcon: Icons.lock,
-                      suffixIcon:
-                          !isObscure ? Icons.visibility : Icons.visibility_off,
-                      textCapitalization: TextCapitalization.none,
-                      borderRadius: 10,
-                      keyboardType: TextInputType.visiblePassword,
-                      isObscure: isObscure,
-                      suffixIconOnPressed: () {
-                        setState(() {
-                          isObscure = !isObscure;
-                        });
-                      },
-                      onChanged: (value) {
-                        setState(() {
-                          password = value;
-                        });
-                      },
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return 'Please enter your password';
-                        }
-                        return null;
-                      },
-                    ),
-                    Container(
-                      alignment: Alignment.centerRight,
-                      child: TextButton(
-                        onPressed: () {
-                          Navigator.pushNamed(
-                            context,
-                            ForgotPasswordScreen.routeName,
-                          );
-                        },
-                        child: const Text('Forgot Password?'),
-                      ),
-                    ),
                     CustomButton(
-                      text: 'Login',
+                      text: 'Submit',
                       isLoading: isLoading,
                       isDisabled: isLoading,
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
-                          handleLogin();
+                          handleSubmit();
                         }
                       },
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Text("Don't have an account?"),
+                        const Text("Already have an account?"),
                         TextButton(
                           onPressed: () {
                             Navigator.pushReplacementNamed(
                               context,
-                              SignUpScreen.routeName,
+                              LoginScreen.routeName,
                             );
                           },
-                          child: const Text('Sign Up'),
+                          child: const Text('Login'),
                         ),
                       ],
                     ),

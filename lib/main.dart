@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:jobboard/providers/user_provider.dart';
+import 'package:jobboard/screens/auth_screens/ForgotPasswordScreen.dart';
 import 'package:jobboard/screens/auth_screens/LoginScreen.dart';
+import 'package:jobboard/screens/auth_screens/OTPScreen.dart';
 import 'package:jobboard/screens/auth_screens/SignUpScreen.dart';
 import 'package:jobboard/screens/home_screen.dart';
 import 'package:jobboard/screens/main_screens/SearchScreen.dart';
@@ -88,6 +90,9 @@ class MyApp extends StatelessWidget {
         SplashScreen.routeName: (context) => const SplashScreen(),
         LoginScreen.routeName: (context) => const LoginScreen(),
         SignUpScreen.routeName: (context) => const SignUpScreen(),
+        ForgotPasswordScreen.routeName: (context) =>
+            const ForgotPasswordScreen(),
+        OTPScreen.routeName: (context) => const OTPScreen(),
         HomeScreen.routeName: (context) => HomeScreen(),
         SearchScreen.routeName: (context) => const SearchScreen(),
         ProfileScreen.routeName: (context) => const ProfileScreen(),

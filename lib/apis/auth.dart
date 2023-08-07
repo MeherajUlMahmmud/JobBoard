@@ -109,4 +109,34 @@ class AuthService {
       };
     }
   }
+
+  Future<Map<String, dynamic>> requestRestEmail(String email) async {
+    try {
+      final response = await http.post(
+        Uri.parse(URLS.kRefreshTokenUrl),
+        body: {
+          'email': email,
+        },
+      );
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return {
+          'data': data,
+          'status': response.statusCode,
+        };
+      } else {
+        final data = jsonDecode(response.body);
+        return {
+          'error': data['detail'],
+          'status': response.statusCode,
+        };
+      }
+    } catch (e) {
+      print(e.toString());
+      return {
+        'error': e.toString(),
+        'status': 500,
+      };
+    }
+  }
 }

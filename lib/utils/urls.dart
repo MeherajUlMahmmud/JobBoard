@@ -9,6 +9,7 @@ class URLS {
   static const String kLoginUrl = "${kAuthUrl}login/";
   static const String kRegisterUrl = "${kAuthUrl}register/";
   static const String kRefreshTokenUrl = "${kAuthUrl}refresh/";
+  static const String kRequestResetEmailUrl = "${kAuthUrl}request-reset-email/";
 
   // User
   static const String kUserUrl = "${kBaseUrl}user/";
