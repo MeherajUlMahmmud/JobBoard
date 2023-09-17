@@ -40,38 +40,84 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        // flexibleSpace: Container(
-        //   decoration: BoxDecoration(
-        //     gradient: LinearGradient(
-        //       colors: [Colors.deepPurple, Colors.purple.shade300],
-        //       begin: Alignment.topLeft,
-        //       end: Alignment.bottomRight,
-        //     ),
-        //   ),
-        // ),
-        title: TextField(
-          controller: _searchController,
-          style: const TextStyle(color: Colors.white),
-          cursorColor: Colors.white,
-          decoration: const InputDecoration(
-            hintText: 'Search jobs',
-            hintStyle: TextStyle(color: Colors.white),
-            border: InputBorder.none,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Container(
+            padding: const EdgeInsets.only(
+              top: 10,
+              left: 10,
+              right: 10,
+            ),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(15),
+                        child: const Text(
+                          'Cancel',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const Text(
+                      'Search',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+                TextField(
+                  controller: _searchController,
+                  decoration: InputDecoration(
+                    contentPadding: const EdgeInsets.all(0),
+                    hintText: 'Job Title',
+                    hintStyle: const TextStyle(
+                      color: Colors.grey,
+                    ),
+                    prefixIcon: const Icon(Icons.search),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: const BorderSide(
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: _searchController,
+                  decoration: InputDecoration(
+                    contentPadding: const EdgeInsets.all(0),
+                    hintText: 'Location, City',
+                    hintStyle: const TextStyle(
+                      color: Colors.grey,
+                    ),
+                    prefixIcon: const Icon(Icons.location_on_outlined),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: const BorderSide(
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
-          onChanged: (value) {
-            // _performSearch();
-          },
         ),
-      ),
-      body: Column(
-        children: [
-          Row(
-            children: const [
-              Text('Search'),
-            ],
-          )
-        ],
       ),
     );
   }

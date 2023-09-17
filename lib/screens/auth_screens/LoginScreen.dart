@@ -6,6 +6,7 @@ import 'package:jobboard/providers/user_provider.dart';
 import 'package:jobboard/screens/auth_screens/ForgotPasswordScreen.dart';
 import 'package:jobboard/screens/auth_screens/SignUpScreen.dart';
 import 'package:jobboard/screens/home_screen.dart';
+import 'package:jobboard/screens/main_screens/MainScreen.dart';
 import 'package:jobboard/utils/helper.dart';
 import 'package:jobboard/utils/local_storage.dart';
 import 'package:jobboard/widgets/bottom_widget.dart';
@@ -65,7 +66,7 @@ class _LoginScreenState extends State<LoginScreen> {
         setState(() {
           isLoading = false;
         });
-        Navigator.pushReplacementNamed(context, HomeScreen.routeName);
+        Navigator.pushReplacementNamed(context, MainScreen.routeName);
       } else {
         setState(() {
           isLoading = false;

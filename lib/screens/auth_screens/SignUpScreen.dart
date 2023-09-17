@@ -57,10 +57,52 @@ class _SignUpScreenState extends State<SignUpScreen> {
       isLoading = true;
     });
 
+    if (userType == 'Applicant') {
+      registerApplicant();
+    } else {
+      registerOrganization();
+    }
+  }
+
+  registerApplicant() {
     AuthService()
-        .registerUser(
+        .registerApplicant(
       firstName,
       lastName,
+      email,
+      password,
+    )
+        .then((data) async {
+      print(data);
+      if (data['status'] == 200) {
+        setState(() {
+          isLoading = false;
+        });
+
+        Helper().showSnackBar(
+          context,
+          'Registration Successful',
+          Colors.green,
+        );
+
+        Navigator.pushReplacementNamed(context, LoginScreen.routeName);
+      } else {
+        setState(() {
+          isLoading = false;
+        });
+        Helper().showSnackBar(
+          context,
+          'Something went wrong',
+          Colors.red,
+        );
+      }
+    });
+  }
+
+  registerOrganization() {
+    AuthService()
+        .registerOrganization(
+      organizationName,
       email,
       password,
     )

@@ -1,6 +1,7 @@
 import 'package:jobboard/providers/user_provider.dart';
 import 'package:jobboard/screens/auth_screens/LoginScreen.dart';
 import 'package:jobboard/screens/home_screen.dart';
+import 'package:jobboard/screens/main_screens/MainScreen.dart';
 import 'package:jobboard/utils/local_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -27,7 +28,7 @@ class _SplashScreenState extends State<SplashScreen> {
       Provider.of<UserProvider>(context, listen: false).setUser(user);
       Provider.of<UserProvider>(context, listen: false).setTokens(tokens);
       Future.delayed(const Duration(seconds: 2), () {
-        Navigator.pushReplacementNamed(context, HomeScreen.routeName);
+        Navigator.pushReplacementNamed(context, MainScreen.routeName);
       });
     }
   }

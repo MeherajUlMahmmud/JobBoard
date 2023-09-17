@@ -5,7 +5,9 @@ import 'package:jobboard/screens/auth_screens/LoginScreen.dart';
 import 'package:jobboard/screens/auth_screens/OTPScreen.dart';
 import 'package:jobboard/screens/auth_screens/SignUpScreen.dart';
 import 'package:jobboard/screens/home_screen.dart';
+import 'package:jobboard/screens/main_screens/MainScreen.dart';
 import 'package:jobboard/screens/main_screens/SearchScreen.dart';
+import 'package:jobboard/screens/profile_screens/ManageCVScreen.dart';
 import 'package:jobboard/screens/profile_screens/ProfileScreen.dart';
 import 'package:jobboard/screens/profile_screens/UpdateProfileScreen.dart';
 import 'package:jobboard/screens/utility_screens/AccountSettingsScreen.dart';
@@ -93,9 +95,11 @@ class MyApp extends StatelessWidget {
         ForgotPasswordScreen.routeName: (context) =>
             const ForgotPasswordScreen(),
         OTPScreen.routeName: (context) => const OTPScreen(),
+        MainScreen.routeName: (context) => const MainScreen(),
         HomeScreen.routeName: (context) => HomeScreen(),
         SearchScreen.routeName: (context) => const SearchScreen(),
         ProfileScreen.routeName: (context) => const ProfileScreen(),
+        ManageCVScreen.routeName: (context) => const ManageCVScreen(),
         UpdateProfileScreen.routeName: (context) => const UpdateProfileScreen(),
         SettingsScreen.routeName: (context) => const SettingsScreen(),
         AccountSettingsScreen.routeName: (context) =>
