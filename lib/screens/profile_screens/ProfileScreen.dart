@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:jobboard/apis/user.dart';
+import 'package:jobboard/apis/api.dart';
+import 'package:jobboard/models/applicant.dart';
+import 'package:jobboard/models/organizaton.dart';
+import 'package:jobboard/models/user.dart';
+import 'package:jobboard/providers/UserProfileProvider.dart';
+import 'package:jobboard/providers/user_provider.dart';
 import 'package:jobboard/screens/profile_screens/ManageCVScreen.dart';
 import 'package:jobboard/screens/profile_screens/UpdateProfileScreen.dart';
 import 'package:jobboard/screens/utility_screens/ImageViewScreen.dart';
-import 'package:jobboard/utils/local_storage.dart';
+import 'package:jobboard/utils/urls.dart';
+import 'package:provider/provider.dart';
 
 class ProfileScreen extends StatefulWidget {
   static const String routeName = '/profile';
@@ -14,9 +20,15 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  final LocalStorage localStorage = LocalStorage();
-  Map<String, dynamic> user = {};
-  Map<String, dynamic> tokens = {};
+  late UserProvider userProvider;
+  late String accessToken;
+  late String userId;
+
+  late UserProfileProvider userProfileProvider;
+
+  late UserProfile userProfile;
+  late Applicant applicant;
+  late Organization organization;
 
   bool isLoading = true;
   bool isError = false;
@@ -26,30 +38,53 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void initState() {
     super.initState();
 
-    readTokensAndUser();
-  }
-
-  readTokensAndUser() async {
-    tokens = await localStorage.readData('tokens');
-    user = await localStorage.readData('user');
+    userProvider = Provider.of<UserProvider>(
+      context,
+      listen: false,
+    );
+    userProfileProvider = Provider.of<UserProfileProvider>(
+      context,
+      listen: false,
+    );
 
     setState(() {
-      isLoading = false;
+      accessToken = userProvider.tokens['access'].toString();
+      userId = userProvider.userData!.id.toString();
     });
+    fetchUserProfile();
   }
 
-  fetchUserDetails() {
+  fetchUserProfile() {
     setState(() {
       isLoading = true;
     });
-    UserService()
-        .getUserDetails(tokens['access'], user['uuid'])
+    String url = '${URLS.kUserUrl}profile/';
+    APIService()
+        .sendGetRequest(
+      accessToken,
+      url,
+    )
         .then((data) async {
-      print(data);
+      print(data['data']);
       if (data['status'] == 200) {
-        await localStorage.writeData('user', data['data']);
+        final UserBase userBase = UserBase.fromJson(data['data']['user_data']);
+        if (userBase.isApplicant == true) {
+          applicant = Applicant.fromJson(data['data']['applicant_data']);
+          userProfile = UserProfile(
+            userData: userBase,
+            applicantData: applicant,
+          );
+        } else if (userBase.isOrganization == true) {
+          organization =
+              Organization.fromJson(data['data']['organization_data']);
+          userProfile = UserProfile(
+            userData: userBase,
+            organizationData: organization,
+          );
+        }
+        userProfileProvider.setUserProfile(userProfile);
+        // await localStorage.writeData('user', data['data']);
         setState(() {
-          user = data['data'];
           isLoading = false;
         });
       } else {
@@ -81,7 +116,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   return Future.delayed(
                     const Duration(seconds: 1),
                     () {
-                      fetchUserDetails();
+                      fetchUserProfile();
                     },
                   );
                 },
@@ -108,10 +143,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  '${user['applicant']['first_name']} ${user['applicant']['last_name']}',
+                                  '${userProfileProvider.userProfile.applicantData?.firstName} ${userProfileProvider.userProfile.applicantData?.lastName}',
                                   style: const TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
+                                    fontSize: 22,
                                   ),
                                   textAlign: TextAlign.center,
                                 ),
@@ -121,7 +155,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       context,
                                       UpdateProfileScreen.routeName,
                                     ).then((value) => {
-                                          if (value == true) fetchUserDetails()
+                                          if (value == true) fetchUserProfile()
                                         });
                                   },
                                   child: Container(

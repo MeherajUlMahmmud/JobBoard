@@ -1,12 +1,11 @@
-import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
 import 'package:jobboard/apis/auth.dart';
+import 'package:jobboard/models/user.dart';
 import 'package:jobboard/providers/user_provider.dart';
 import 'package:jobboard/screens/auth_screens/ForgotPasswordScreen.dart';
 import 'package:jobboard/screens/auth_screens/SignUpScreen.dart';
-import 'package:jobboard/screens/home_screen.dart';
 import 'package:jobboard/screens/main_screens/MainScreen.dart';
+import 'package:jobboard/utils/constants.dart';
 import 'package:jobboard/utils/helper.dart';
 import 'package:jobboard/utils/local_storage.dart';
 import 'package:jobboard/widgets/bottom_widget.dart';
@@ -25,6 +24,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final LocalStorage localStorage = LocalStorage();
+  late UserProvider userProvider;
 
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
@@ -36,6 +36,13 @@ class _LoginScreenState extends State<LoginScreen> {
   bool isLoading = false;
 
   final _formKey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    super.initState();
+
+    userProvider = Provider.of<UserProvider>(context, listen: false);
+  }
 
   @override
   void dispose() {
@@ -51,18 +58,26 @@ class _LoginScreenState extends State<LoginScreen> {
       isLoading = true;
     });
 
-    AuthService().loginUser(email, password).then((data) async {
-      print(data);
+    AuthService()
+        .loginUser(
+      email,
+      password,
+    )
+        .then((data) async {
       if (data['status'] == 200) {
         await localStorage.writeData('user', data['data']['user']);
         await localStorage.writeData('tokens', data['data']['tokens']);
 
-        Provider.of<UserProvider>(context, listen: false)
-            .setUser(data['data']['user']);
-        Provider.of<UserProvider>(context, listen: false)
-            .setTokens(data['data']['tokens']);
+        UserBase user = UserBase.fromJson(data['data']['user']);
+        userProvider.setUserData(user);
+        userProvider.setTokens(data['data']['tokens']);
 
-        Helper().showSnackBar(context, 'Login Successful', Colors.green);
+        if (!context.mounted) return;
+        Helper().showSnackBar(
+          context,
+          'Login Successful',
+          Colors.green,
+        );
         setState(() {
           isLoading = false;
         });
@@ -103,7 +118,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Text(
-                      'JobBoard',
+                      Constants.appName,
                       style: TextStyle(
                         fontSize: 35,
                         fontWeight: FontWeight.bold,

@@ -1,13 +1,16 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:jobboard/apis/user.dart';
+import 'package:jobboard/apis/api.dart';
+import 'package:jobboard/providers/UserProfileProvider.dart';
+import 'package:jobboard/providers/user_provider.dart';
 import 'package:jobboard/screens/utility_screens/ImageViewScreen.dart';
-import 'package:jobboard/utils/local_storage.dart';
+import 'package:jobboard/utils/urls.dart';
 import 'package:jobboard/widgets/custom_button.dart';
 import 'package:jobboard/widgets/custom_text_form_field.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 
 class UpdateProfileScreen extends StatefulWidget {
   static const String routeName = '/update-profile';
@@ -19,9 +22,16 @@ class UpdateProfileScreen extends StatefulWidget {
 }
 
 class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
-  final LocalStorage localStorage = LocalStorage();
-  Map<String, dynamic> user = {};
-  Map<String, dynamic> tokens = {};
+  late UserProvider userProvider;
+  late String accessToken;
+
+  late UserProfileProvider userProfileProvider;
+  late String applicantId,
+      organizationId,
+      firstName,
+      lastName,
+      name,
+      phoneNumber;
 
   final _formKey = GlobalKey<FormState>();
 
@@ -34,10 +44,11 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
   TextEditingController lastNameController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
 
-  String uuid = '';
-  String firstName = '';
-  String lastName = '';
-  String phone = '';
+  Map<String, dynamic> updatedProfileData = {
+    'first_name': '',
+    'last_name': '',
+    'phone_number': '',
+  };
 
   // image
   File? imageFile;
@@ -46,7 +57,29 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
   void initState() {
     super.initState();
 
-    readTokensAndUser();
+    userProvider = Provider.of<UserProvider>(
+      context,
+      listen: false,
+    );
+    userProfileProvider = Provider.of<UserProfileProvider>(
+      context,
+      listen: false,
+    );
+    if (userProvider.userData?.isApplicant == true) {
+      applicantId =
+          userProfileProvider.userProfile.applicantData!.id.toString();
+      firstName =
+          userProfileProvider.userProfile.applicantData?.firstName ?? '';
+      lastName = userProfileProvider.userProfile.applicantData?.lastName ?? '';
+      phoneNumber =
+          userProfileProvider.userProfile.applicantData?.phoneNumber ?? '';
+    } else {
+      organizationId =
+          userProfileProvider.userProfile.organizationData!.id.toString();
+      name = userProfileProvider.userProfile.organizationData?.name ?? '';
+    }
+
+    imageFile = File('assets/avatars/rdj.png');
   }
 
   @override
@@ -56,24 +89,6 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
     phoneController.dispose();
 
     super.dispose();
-  }
-
-  readTokensAndUser() async {
-    tokens = await localStorage.readData('tokens');
-    user = await localStorage.readData('user');
-
-    imageFile = File('assets/avatars/rdj.png');
-
-    firstName = user['applicant']['first_name'];
-    lastName = user['applicant']['last_name'];
-    phone = user['applicant']['phone_number'] ?? '';
-    firstNameController.text = firstName;
-    lastNameController.text = lastName;
-    phoneController.text = phone;
-
-    setState(() {
-      isLoading = false;
-    });
   }
 
   Future<File> getFromGallery() async {
@@ -104,18 +119,20 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
     setState(() {
       isSubmitting = true;
     });
-    UserService()
-        .updateApplicantDetails(
-      tokens['access'],
-      user['applicant']['uuid'],
-      firstName,
-      lastName,
-      phone,
+    String url = '';
+    if (userProvider.userData?.isApplicant == true) {
+      url = '${URLS.kApplicantUrl}$applicantId/update/';
+    } else {
+      url = '${URLS.kApplicantUrl}$organizationId/update/';
+    }
+    APIService()
+        .sendPatchRequest(
+      accessToken,
+      updatedProfileData,
+      url,
     )
         .then((data) async {
-      print(data);
       if (data['status'] == 200) {
-        await localStorage.writeData('user', data['data']);
         setState(() {
           isSubmitting = false;
         });
@@ -242,7 +259,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                         keyboardType: TextInputType.name,
                         onChanged: (value) {
                           setState(() {
-                            firstName = value;
+                            updatedProfileData['first_name'] = value;
                           });
                         },
                         validator: (value) {
@@ -264,7 +281,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                         keyboardType: TextInputType.name,
                         onChanged: (value) {
                           setState(() {
-                            lastName = value;
+                            updatedProfileData['last_name'] = value;
                           });
                         },
                         validator: (value) {
@@ -286,7 +303,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                         keyboardType: TextInputType.number,
                         onChanged: (value) {
                           setState(() {
-                            phone = value;
+                            updatedProfileData['phone_number'] = value;
                           });
                         },
                       ),

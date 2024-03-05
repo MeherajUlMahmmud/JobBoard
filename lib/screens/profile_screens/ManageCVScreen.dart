@@ -19,7 +19,7 @@ class _ManageCVScreenState extends State<ManageCVScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Manage your CV'),
+        title: const Text('Manage Your Resumes'),
         actions: [
           Center(
               child: Padding(
@@ -48,7 +48,7 @@ class _ManageCVScreenState extends State<ManageCVScreen> {
           padding: const EdgeInsets.all(10),
           child: ElevatedButton(
             onPressed: () {
-              Navigator.of(context).pushNamed('/update-profile');
+              // Navigator.of(context).pushNamed('/update-profile');
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Theme.of(context).primaryColor,

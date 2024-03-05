@@ -1,0 +1,80 @@
+import 'package:jobboard/models/applicant.dart';
+import 'package:jobboard/models/organizaton.dart';
+
+class UserBase {
+  int? id;
+  String? email;
+  bool? isApplicant;
+  bool? isOrganization;
+  bool? isVerified;
+  bool? isStaff;
+  bool? isSuperuser;
+
+  UserBase({
+    this.id,
+    this.email,
+    this.isApplicant,
+    this.isOrganization,
+    this.isVerified,
+    this.isStaff,
+    this.isSuperuser,
+  });
+
+  UserBase.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    email = json['email'];
+    isApplicant = json['is_applicant'];
+    isOrganization = json['is_organization'];
+    isVerified = json['is_verified'];
+    isStaff = json['is_staff'];
+    isSuperuser = json['is_superuser'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['email'] = email;
+    data['is_applicant'] = isApplicant;
+    data['is_organization'] = isOrganization;
+    data['is_verified'] = isVerified;
+    data['is_staff'] = isStaff;
+    data['is_superuser'] = isSuperuser;
+    return data;
+  }
+}
+
+class UserProfile {
+  UserBase? userData;
+  Applicant? applicantData;
+  Organization? organizationData;
+
+  UserProfile({
+    this.userData,
+    this.applicantData,
+    this.organizationData,
+  });
+
+  UserProfile.fromJson(Map<String, dynamic> json) {
+    userData =
+        json['user_data'] != null ? UserBase.fromJson(json['user_data']) : null;
+    applicantData = json['applicant_data'] != null
+        ? Applicant.fromJson(json['applicant_data'])
+        : null;
+    organizationData = json['organization_data'] != null
+        ? Organization.fromJson(json['organization_data'])
+        : null;
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    if (userData != null) {
+      data['user_data'] = userData!.toJson();
+    }
+    if (applicantData != null) {
+      data['applicant_data'] = applicantData!.toJson();
+    }
+    if (organizationData != null) {
+      data['organization_data'] = organizationData!.toJson();
+    }
+    return data;
+  }
+}

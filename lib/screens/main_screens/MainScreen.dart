@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:jobboard/screens/home_screen.dart';
 import 'package:jobboard/screens/main_screens/SearchScreen.dart';
 import 'package:jobboard/screens/profile_screens/ProfileScreen.dart';
-import 'package:jobboard/utils/local_storage.dart';
 
 class MainScreen extends StatefulWidget {
   static const String routeName = '/main';

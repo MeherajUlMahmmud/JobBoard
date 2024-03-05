@@ -1,19 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:jobboard/models/user.dart';
 
 class UserProvider with ChangeNotifier {
-  Map<String, dynamic> _user = {};
-  Map<String, dynamic> _tokens = {};
+  final Map<String, dynamic> _tokens = {
+    'access': '',
+    'refresh': '',
+  };
+  UserBase? _userData;
 
-  void setUser(Map<String, dynamic> user) {
-    _user = user;
-    notifyListeners();
-  }
+  Map<String, dynamic> get tokens => _tokens;
+  UserBase? get userData => _userData;
 
   void setTokens(Map<String, dynamic> tokens) {
-    _tokens = tokens;
+    _tokens['access'] = tokens['access'];
+    _tokens['refresh'] = tokens['refresh'];
     notifyListeners();
   }
 
-  Map<String, dynamic> get user => _user;
-  Map<String, dynamic> get tokens => _tokens;
+  void setUserData(UserBase userData) {
+    _userData = userData;
+    notifyListeners();
+  }
 }

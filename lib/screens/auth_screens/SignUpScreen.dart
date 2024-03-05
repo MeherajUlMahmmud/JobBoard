@@ -1,5 +1,3 @@
-import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
 import 'package:jobboard/apis/auth.dart';
 import 'package:jobboard/screens/auth_screens/LoginScreen.dart';

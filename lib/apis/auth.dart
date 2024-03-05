@@ -1,7 +1,8 @@
 import 'dart:convert';
+import 'dart:developer';
 
-import 'package:jobboard/utils/urls.dart';
 import 'package:http/http.dart' as http;
+import 'package:jobboard/utils/urls.dart';
 
 class AuthService {
   Future<Map<String, dynamic>> registerApplicant(
@@ -34,14 +35,14 @@ class AuthService {
         };
       } else {
         final data = jsonDecode(response.body);
-        print(data);
+        log(data);
         return {
           'error': data['detail'],
           'status': response.statusCode,
         };
       }
     } catch (e) {
-      print(e.toString());
+      log(e.toString());
       return {
         'error': e.toString(),
         'status': 500,
@@ -77,14 +78,14 @@ class AuthService {
         };
       } else {
         final data = jsonDecode(response.body);
-        print(data);
+        log(data);
         return {
           'error': data['detail'],
           'status': response.statusCode,
         };
       }
     } catch (e) {
-      print(e.toString());
+      log(e.toString());
       return {
         'error': e.toString(),
         'status': 500,
@@ -115,7 +116,37 @@ class AuthService {
         };
       }
     } catch (e) {
-      print(e.toString());
+      log(e.toString());
+      return {
+        'error': e.toString(),
+        'status': 500,
+      };
+    }
+  }
+
+  Future<Map<String, dynamic>> requestResetEmail(String email) async {
+    try {
+      final response = await http.post(
+        Uri.parse(URLS.kRefreshTokenUrl),
+        body: {
+          'email': email,
+        },
+      );
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return {
+          'data': data,
+          'status': response.statusCode,
+        };
+      } else {
+        final data = jsonDecode(response.body);
+        return {
+          'error': data['detail'],
+          'status': response.statusCode,
+        };
+      }
+    } catch (e) {
+      log(e.toString());
       return {
         'error': e.toString(),
         'status': 500,
@@ -145,37 +176,7 @@ class AuthService {
         };
       }
     } catch (e) {
-      print(e.toString());
-      return {
-        'error': e.toString(),
-        'status': 500,
-      };
-    }
-  }
-
-  Future<Map<String, dynamic>> requestRestEmail(String email) async {
-    try {
-      final response = await http.post(
-        Uri.parse(URLS.kRefreshTokenUrl),
-        body: {
-          'email': email,
-        },
-      );
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        return {
-          'data': data,
-          'status': response.statusCode,
-        };
-      } else {
-        final data = jsonDecode(response.body);
-        return {
-          'error': data['detail'],
-          'status': response.statusCode,
-        };
-      }
-    } catch (e) {
-      print(e.toString());
+      log(e.toString());
       return {
         'error': e.toString(),
         'status': 500,

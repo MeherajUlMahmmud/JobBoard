@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jobboard/screens/auth_screens/LoginScreen.dart';
+import 'package:jobboard/utils/constants.dart';
 import 'package:jobboard/widgets/bottom_widget.dart';
 import 'package:jobboard/widgets/custom_button.dart';
 import 'package:jobboard/widgets/top_widget.dart';
@@ -67,7 +68,7 @@ class _OTPScreenState extends State<OTPScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Text(
-                      'JobBoard',
+                      Constants.appName,
                       style: TextStyle(
                         fontSize: 35,
                         fontWeight: FontWeight.bold,

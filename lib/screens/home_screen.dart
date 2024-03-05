@@ -1,16 +1,10 @@
-import 'package:jobboard/providers/user_provider.dart';
-import 'package:jobboard/screens/auth_screens/LoginScreen.dart';
-import 'package:jobboard/screens/main_screens/SearchScreen.dart';
-import 'package:jobboard/screens/profile_screens/ProfileScreen.dart';
-import 'package:jobboard/screens/utility_screens/SettingsScreen.dart';
-import 'package:jobboard/utils/helper.dart';
-import 'package:jobboard/utils/local_storage.dart';
-import 'package:jobboard/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:jobboard/providers/user_provider.dart';
+import 'package:jobboard/screens/main_screens/SearchScreen.dart';
 import 'package:jobboard/widgets/custom_gap.dart';
 import 'package:jobboard/widgets/job_tile.dart';
 import 'package:jobboard/widgets/show_all_btn.dart';
-import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
   static const routeName = '/home';
@@ -19,16 +13,14 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final LocalStorage localStorage = LocalStorage();
-  Map<String, dynamic> user = {};
-  Map<String, dynamic> tokens = {};
+  late UserProvider userProvider;
+  late String accessToken;
+  late String userId;
+  late bool isApplicant, isOrganiation;
 
   TextEditingController titleController = TextEditingController();
 
-  late List<dynamic> resumes = [];
   bool isLoading = true;
-  bool isApplicant = false;
-  bool isOrganiation = false;
   bool isError = false;
   String errorText = '';
 
@@ -36,14 +28,17 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
 
-    readTokensAndUser();
-  }
+    userProvider = Provider.of<UserProvider>(
+      context,
+      listen: false,
+    );
 
-  readTokensAndUser() async {
-    tokens = await localStorage.readData('tokens');
-    user = await localStorage.readData('user');
-    isApplicant = user['is_applicant'];
-    isOrganiation = user['is_organization'];
+    setState(() {
+      accessToken = userProvider.tokens['access'].toString();
+      userId = userProvider.userData!.id.toString();
+      isApplicant = userProvider.userData!.isApplicant!;
+      isOrganiation = userProvider.userData!.isOrganization!;
+    });
 
     if (isApplicant == true) {
       fetchApplicantData();
@@ -80,10 +75,10 @@ class _HomeScreenState extends State<HomeScreen> {
             ? const Center(child: CircularProgressIndicator())
             : RefreshIndicator(
                 onRefresh: () async {
-                  setState(() {
-                    isLoading = true;
-                  });
-                  await readTokensAndUser();
+                  // setState(() {
+                  //   isLoading = true;
+                  // });
+                  // await readTokensAndUser();
                 },
                 child: isError
                     ? Center(

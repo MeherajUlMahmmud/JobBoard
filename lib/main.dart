@@ -1,27 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:jobboard/providers/user_provider.dart';
-import 'package:jobboard/screens/auth_screens/ForgotPasswordScreen.dart';
-import 'package:jobboard/screens/auth_screens/LoginScreen.dart';
-import 'package:jobboard/screens/auth_screens/OTPScreen.dart';
-import 'package:jobboard/screens/auth_screens/SignUpScreen.dart';
-import 'package:jobboard/screens/home_screen.dart';
-import 'package:jobboard/screens/main_screens/MainScreen.dart';
-import 'package:jobboard/screens/main_screens/SearchScreen.dart';
-import 'package:jobboard/screens/profile_screens/ManageCVScreen.dart';
-import 'package:jobboard/screens/profile_screens/ProfileScreen.dart';
-import 'package:jobboard/screens/profile_screens/UpdateProfileScreen.dart';
-import 'package:jobboard/screens/utility_screens/AccountSettingsScreen.dart';
-import 'package:jobboard/screens/utility_screens/SettingsScreen.dart';
-import 'package:jobboard/utils/colors.dart';
 import 'package:provider/provider.dart';
-
-import 'screens/utility_screens/SplashScreen.dart';
+import 'package:jobboard/providers/user_provider.dart';
+import 'package:jobboard/utils/colors.dart';
+import 'package:jobboard/utils/constants.dart';
+import 'package:jobboard/utils/routes_handler.dart';
 
 void main() {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => UserProvider()),
+        ChangeNotifierProvider(create: (context) => UserProvider()),
       ],
       child: const MyApp(),
     ),
@@ -36,7 +24,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'JobBoard',
+      title: Constants.appName,
       theme: ThemeData(
         primarySwatch: createMaterialColor(const Color(0xB316BFC4)),
         primaryColor: createMaterialColor(const Color(0xB316BFC4)),
@@ -88,23 +76,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      routes: {
-        SplashScreen.routeName: (context) => const SplashScreen(),
-        LoginScreen.routeName: (context) => const LoginScreen(),
-        SignUpScreen.routeName: (context) => const SignUpScreen(),
-        ForgotPasswordScreen.routeName: (context) =>
-            const ForgotPasswordScreen(),
-        OTPScreen.routeName: (context) => const OTPScreen(),
-        MainScreen.routeName: (context) => const MainScreen(),
-        HomeScreen.routeName: (context) => HomeScreen(),
-        SearchScreen.routeName: (context) => const SearchScreen(),
-        ProfileScreen.routeName: (context) => const ProfileScreen(),
-        ManageCVScreen.routeName: (context) => const ManageCVScreen(),
-        UpdateProfileScreen.routeName: (context) => const UpdateProfileScreen(),
-        SettingsScreen.routeName: (context) => const SettingsScreen(),
-        AccountSettingsScreen.routeName: (context) =>
-            const AccountSettingsScreen(),
-      },
+      onGenerateRoute: generateRoute,
     );
   }
 }

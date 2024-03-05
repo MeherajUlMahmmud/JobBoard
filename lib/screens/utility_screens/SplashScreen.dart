@@ -1,6 +1,6 @@
+import 'package:jobboard/models/user.dart';
 import 'package:jobboard/providers/user_provider.dart';
 import 'package:jobboard/screens/auth_screens/LoginScreen.dart';
-import 'package:jobboard/screens/home_screen.dart';
 import 'package:jobboard/screens/main_screens/MainScreen.dart';
 import 'package:jobboard/utils/local_storage.dart';
 import 'package:flutter/material.dart';
@@ -19,14 +19,25 @@ class _SplashScreenState extends State<SplashScreen> {
 
   void checkUser() async {
     final Map<String, dynamic> tokens = await localStorage.readData('tokens');
-    final Map<String, dynamic> user = await localStorage.readData('user');
+
+    if (!mounted) return;
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+
     if (tokens['access'] == null || tokens['refresh'] == null) {
       Future.delayed(const Duration(seconds: 2), () {
         Navigator.pushReplacementNamed(context, LoginScreen.routeName);
       });
     } else {
-      Provider.of<UserProvider>(context, listen: false).setUser(user);
-      Provider.of<UserProvider>(context, listen: false).setTokens(tokens);
+      // Set tokens in the provider
+      userProvider.setTokens(tokens);
+
+      // Load user data from local storage
+      final userDataJson = await localStorage.readData('user');
+
+      UserBase userData = UserBase.fromJson(userDataJson);
+      // Set user data in the provider
+      userProvider.setUserData(userData);
+
       Future.delayed(const Duration(seconds: 2), () {
         Navigator.pushReplacementNamed(context, MainScreen.routeName);
       });
