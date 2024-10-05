@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jobboard/screens/home_screen.dart';
-import 'package:jobboard/screens/main_screens/SearchScreen.dart';
-import 'package:jobboard/screens/profile_screens/ProfileScreen.dart';
+import 'package:jobboard/screens/main_screens/search_screen.dart';
+import 'package:jobboard/screens/profile_screens/profile_screen.dart';
 
 class MainScreen extends StatefulWidget {
   static const String routeName = '/main';
@@ -26,14 +26,17 @@ class _MainScreenState extends State<MainScreen> {
     return Scaffold(
       body: _screens[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
+        selectedItemColor: Theme.of(context).primaryColor,
+        unselectedItemColor: Colors.grey,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.message_outlined),
-            label: 'Chats',
+            icon: Icon(Icons.search),
+            label: 'Search',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),

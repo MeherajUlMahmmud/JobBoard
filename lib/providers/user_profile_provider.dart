@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:jobboard/models/user.dart';
+
+import '../models/user.dart';
 
 class UserProfileProvider with ChangeNotifier {
   UserProfile _userProfile = UserProfile();

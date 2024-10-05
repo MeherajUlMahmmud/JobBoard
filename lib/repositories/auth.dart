@@ -2,9 +2,11 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:http/http.dart' as http;
-import 'package:jobboard/utils/urls.dart';
 
-class AuthService {
+import '../utils/constants.dart';
+import '../utils/urls.dart';
+
+class AuthRepository {
   Future<Map<String, dynamic>> registerApplicant(
     String firstName,
     String lastName,
@@ -27,7 +29,7 @@ class AuthService {
           'is_organization': false,
         }),
       );
-      if (response.statusCode == 200) {
+      if (response.statusCode == Constants.httpOkCode) {
         final data = jsonDecode(response.body);
         return {
           'data': data,
@@ -35,14 +37,14 @@ class AuthService {
         };
       } else {
         final data = jsonDecode(response.body);
-        log(data);
+        print(data);
         return {
           'error': data['detail'],
           'status': response.statusCode,
         };
       }
     } catch (e) {
-      log(e.toString());
+      print(e.toString());
       return {
         'error': e.toString(),
         'status': 500,
@@ -70,7 +72,7 @@ class AuthService {
           'is_organization': true,
         }),
       );
-      if (response.statusCode == 200) {
+      if (response.statusCode == Constants.httpOkCode) {
         final data = jsonDecode(response.body);
         return {
           'data': data,
@@ -102,7 +104,7 @@ class AuthService {
           'password': password,
         },
       );
-      if (response.statusCode == 200) {
+      if (response.statusCode == Constants.httpOkCode) {
         final data = jsonDecode(response.body);
         return {
           'data': data,
@@ -116,37 +118,7 @@ class AuthService {
         };
       }
     } catch (e) {
-      log(e.toString());
-      return {
-        'error': e.toString(),
-        'status': 500,
-      };
-    }
-  }
-
-  Future<Map<String, dynamic>> requestResetEmail(String email) async {
-    try {
-      final response = await http.post(
-        Uri.parse(URLS.kRefreshTokenUrl),
-        body: {
-          'email': email,
-        },
-      );
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        return {
-          'data': data,
-          'status': response.statusCode,
-        };
-      } else {
-        final data = jsonDecode(response.body);
-        return {
-          'error': data['detail'],
-          'status': response.statusCode,
-        };
-      }
-    } catch (e) {
-      log(e.toString());
+      print(e.toString());
       return {
         'error': e.toString(),
         'status': 500,
@@ -162,7 +134,7 @@ class AuthService {
           'refresh': refreshToken,
         },
       );
-      if (response.statusCode == 200) {
+      if (response.statusCode == Constants.httpOkCode) {
         final data = jsonDecode(response.body);
         return {
           'data': data,
@@ -176,7 +148,7 @@ class AuthService {
         };
       }
     } catch (e) {
-      log(e.toString());
+      print(e.toString());
       return {
         'error': e.toString(),
         'status': 500,

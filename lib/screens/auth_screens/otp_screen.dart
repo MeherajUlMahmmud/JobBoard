@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:jobboard/screens/auth_screens/LoginScreen.dart';
-import 'package:jobboard/utils/constants.dart';
-import 'package:jobboard/widgets/bottom_widget.dart';
-import 'package:jobboard/widgets/custom_button.dart';
-import 'package:jobboard/widgets/top_widget.dart';
+
+import '../../utils/constants.dart';
+import '../../widgets/bottom_widget.dart';
+import '../../widgets/custom_button.dart';
+import '../../widgets/top_widget.dart';
+import 'login_screen.dart';
 
 class OTPScreen extends StatefulWidget {
-  static const routeName = '/otp';
+  static const routeName = Constants.otpScreenRouteName;
+
   const OTPScreen({super.key});
 
   @override

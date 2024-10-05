@@ -1,16 +1,17 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:jobboard/apis/api.dart';
-import 'package:jobboard/providers/UserProfileProvider.dart';
-import 'package:jobboard/providers/user_provider.dart';
-import 'package:jobboard/screens/utility_screens/ImageViewScreen.dart';
-import 'package:jobboard/utils/urls.dart';
-import 'package:jobboard/widgets/custom_button.dart';
-import 'package:jobboard/widgets/custom_text_form_field.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+
+import '../../providers/user_data_provider.dart';
+import '../../providers/user_profile_provider.dart';
+import '../../repositories/user.dart';
+import '../../utils/constants.dart';
+import '../../utils/helper.dart';
+import '../../widgets/custom_button.dart';
+import '../../widgets/custom_text_form_field.dart';
 
 class UpdateProfileScreen extends StatefulWidget {
   static const String routeName = '/update-profile';
@@ -22,11 +23,11 @@ class UpdateProfileScreen extends StatefulWidget {
 }
 
 class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
-  late UserProvider userProvider;
-  late String accessToken;
+  UserRepository userRepository = UserRepository();
 
   late UserProfileProvider userProfileProvider;
-  late String applicantId,
+  late String userId,
+      applicantId,
       organizationId,
       firstName,
       lastName,
@@ -35,7 +36,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
 
   final _formKey = GlobalKey<FormState>();
 
-  bool isLoading = true;
+  bool isLoading = false;
   bool isSubmitting = false;
   bool isError = false;
   String errorText = '';
@@ -57,15 +58,11 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
   void initState() {
     super.initState();
 
-    userProvider = Provider.of<UserProvider>(
-      context,
-      listen: false,
-    );
     userProfileProvider = Provider.of<UserProfileProvider>(
       context,
       listen: false,
     );
-    if (userProvider.userData?.isApplicant == true) {
+    if (UserProvider().userData?.isApplicant == true) {
       applicantId =
           userProfileProvider.userProfile.applicantData!.id.toString();
       firstName =
@@ -73,11 +70,25 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
       lastName = userProfileProvider.userProfile.applicantData?.lastName ?? '';
       phoneNumber =
           userProfileProvider.userProfile.applicantData?.phoneNumber ?? '';
+
+      setState(() {
+        applicantId =
+            userProfileProvider.userProfile.applicantData!.id.toString();
+
+        updatedProfileData['first_name'] = firstName;
+        updatedProfileData['last_name'] = lastName;
+        updatedProfileData['phone_number'] = phoneNumber;
+
+        firstNameController.text = firstName;
+        lastNameController.text = lastName;
+        phoneController.text = phoneNumber;
+      });
     } else {
       organizationId =
           userProfileProvider.userProfile.organizationData!.id.toString();
       name = userProfileProvider.userProfile.organizationData?.name ?? '';
     }
+    userId = UserProvider().userData!.id.toString();
 
     imageFile = File('assets/avatars/rdj.png');
   }
@@ -115,42 +126,120 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
     return File(croppedFile!.path);
   }
 
-  handleSubmit() {
+  handleSubmit() async {
     setState(() {
       isSubmitting = true;
     });
-    String url = '';
-    if (userProvider.userData?.isApplicant == true) {
-      url = '${URLS.kApplicantUrl}$applicantId/update/';
-    } else {
-      url = '${URLS.kApplicantUrl}$organizationId/update/';
-    }
-    APIService()
-        .sendPatchRequest(
-      accessToken,
-      updatedProfileData,
-      url,
-    )
-        .then((data) async {
-      if (data['status'] == 200) {
-        setState(() {
-          isSubmitting = false;
-        });
-        Navigator.of(context).pop(true);
+
+    try {
+      if (UserProvider().userData?.isApplicant == true) {
+        final response = await userRepository.updateUserProfile(
+          userId,
+          updatedProfileData,
+        );
+
+        if (response['status'] == Constants.httpOkCode) {
+          setState(() {
+            isSubmitting = false;
+          });
+          if (!mounted) return;
+          Helper().showSnackBar(
+            context,
+            'Profile updated successfully',
+            Colors.green,
+          );
+          Navigator.of(context).pop(true);
+        } else {
+          if (response['status'] == Constants.httpUnauthorizedCode) {
+            if (!mounted) return;
+            Helper().showSnackBar(
+              context,
+              Constants.sessionExpiredMsg,
+              Colors.red,
+            );
+            Helper().logoutUser(context);
+          } else {
+            setState(() {
+              isSubmitting = false;
+              isError = true;
+            });
+          }
+        }
       } else {
-        setState(() {
-          isSubmitting = false;
-          isError = true;
-          errorText = data['error'];
-        });
+        final response = await userRepository.updateUserProfile(
+          userId,
+          updatedProfileData,
+        );
+
+        if (response['status'] == Constants.httpOkCode) {
+          setState(() {
+            isSubmitting = false;
+          });
+          if (!mounted) return;
+          Helper().showSnackBar(
+            context,
+            'Profile updated successfully',
+            Colors.green,
+          );
+          Navigator.of(context).pop(true);
+        } else {
+          if (response['status'] == Constants.httpUnauthorizedCode) {
+            if (!mounted) return;
+            Helper().showSnackBar(
+              context,
+              Constants.sessionExpiredMsg,
+              Colors.red,
+            );
+            Helper().logoutUser(context);
+          } else {
+            setState(() {
+              isSubmitting = false;
+              isError = true;
+            });
+          }
+        }
       }
-    }).catchError((e) {
-      print(e);
+    } catch (error) {
+      print('Error updating user profile: $error');
+      if (!mounted) return;
       setState(() {
+        isSubmitting = false;
         isError = true;
-        errorText = e.toString();
       });
-    });
+    }
+
+    // String url = '';
+    // if (userProvider.userData?.isApplicant == true) {
+    //   url = '${URLS.kApplicantUrl}$applicantId/update/';
+    // } else {
+    //   url = '${URLS.kApplicantUrl}$organizationId/update/';
+    // }
+    // APIService()
+    //     .sendPatchRequest(
+    //   accessToken,
+    //   updatedProfileData,
+    //   url,
+    // )
+    //     .then((data) async {
+    //   if (data['status'] == 200) {
+    //     setState(() {
+    //       isSubmitting = false;
+    //     });
+    //     Navigator.of(context).pop(true);
+    //   } else {
+    //     setState(() {
+    //       isSubmitting = false;
+    //       isError = true;
+    //       errorText = data['error'];
+    //     });
+    //   }
+    // }).catchError((e) {
+    //   print(e);
+    //   setState(() {
+    //     isError = true;
+    //     errorText = e.toString();
+    //   });
+    // });
   }
 
   @override
@@ -158,14 +247,34 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
     double width = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Update Profile')),
       resizeToAvoidBottomInset: false,
-      // floatingActionButton: FloatingActionButton(
-      //   child: const Icon(Icons.save),
-      //   onPressed: () {
-      //     if (_formKey.currentState!.validate()) handleSubmit();
-      //   },
-      // ),
+      appBar: AppBar(
+        elevation: 0,
+        centerTitle: true,
+        title: const Text(
+          'Update Profile',
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 22,
+          ),
+        ),
+        leading: GestureDetector(
+          onTap: () {
+            Navigator.pop(context);
+          },
+          child: Container(
+            padding: const EdgeInsets.all(10.0),
+            margin: const EdgeInsets.only(left: 10.0),
+            child: Container(
+              margin: const EdgeInsets.only(left: 5.0),
+              child: const Icon(
+                Icons.arrow_back_ios,
+                color: Colors.black,
+              ),
+            ),
+          ),
+        ),
+      ),
       bottomNavigationBar: Container(
         padding: const EdgeInsets.symmetric(
           horizontal: 10.0,
@@ -210,12 +319,21 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                       Stack(
                         children: [
                           SizedBox(
-                            height: 150,
-                            width: 150,
-                            child: ImageFullScreenWrapperWidget(
-                              dark: true,
-                              // child: Image.asset("assets/avatars/rdj.png"),
-                              child: Image.asset(imageFile!.path),
+                            height: 200,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(8.0),
+                              child: userProfileProvider.userProfile
+                                          .applicantData?.profilePicture !=
+                                      null
+                                  ? Image.network(
+                                      userProfileProvider.userProfile
+                                          .applicantData!.profilePicture!,
+                                      height: 200.0,
+                                    )
+                                  : Image.asset(
+                                      Constants.defaultAvatarPath,
+                                      height: 200.0,
+                                    ),
                             ),
                           ),
                           Positioned(
@@ -232,8 +350,8 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                                 });
                               },
                               child: Container(
-                                height: 35,
-                                width: 35,
+                                height: 40,
+                                width: 40,
                                 decoration: BoxDecoration(
                                   color: Theme.of(context).primaryColor,
                                   borderRadius: BorderRadius.circular(15),
@@ -241,6 +359,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                                 child: const Icon(
                                   Icons.edit,
                                   size: 18,
+                                  color: Colors.white,
                                 ),
                               ),
                             ),
@@ -273,8 +392,8 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                       CustomTextFormField(
                         width: width,
                         controller: lastNameController,
-                        labelText: 'Surname',
-                        hintText: 'Surname',
+                        labelText: 'Last Name',
+                        hintText: 'Last Name',
                         prefixIcon: Icons.person_outline,
                         textCapitalization: TextCapitalization.words,
                         borderRadius: 10,
@@ -286,7 +405,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                         },
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Please enter surname';
+                            return 'Please enter last name';
                           }
                           return null;
                         },

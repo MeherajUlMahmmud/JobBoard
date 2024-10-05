@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:jobboard/apis/auth.dart';
-import 'package:jobboard/screens/auth_screens/LoginScreen.dart';
-import 'package:jobboard/utils/helper.dart';
-import 'package:jobboard/widgets/bottom_widget.dart';
-import 'package:jobboard/widgets/custom_button.dart';
-import 'package:jobboard/widgets/custom_text_form_field.dart';
-import 'package:jobboard/widgets/top_widget.dart';
+
+import '../../repositories/auth.dart';
+import '../../utils/constants.dart';
+import '../../utils/helper.dart';
+import '../../widgets/bottom_widget.dart';
+import '../../widgets/custom_button.dart';
+import '../../widgets/custom_text_form_field.dart';
+import '../../widgets/top_widget.dart';
+import 'login_screen.dart';
 
 class SignUpScreen extends StatefulWidget {
-  static const routeName = '/signup';
+  static const routeName = Constants.signUpScreenRouteName;
+
   const SignUpScreen({Key? key}) : super(key: key);
 
   @override
@@ -63,7 +66,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   registerApplicant() {
-    AuthService()
+    AuthRepository()
         .registerApplicant(
       firstName,
       lastName,
@@ -98,7 +101,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   registerOrganization() {
-    AuthService()
+    AuthRepository()
         .registerOrganization(
       organizationName,
       email,

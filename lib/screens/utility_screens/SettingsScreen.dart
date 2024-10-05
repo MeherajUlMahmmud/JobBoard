@@ -1,4 +1,4 @@
-import 'package:jobboard/screens/auth_screens/LoginScreen.dart';
+import 'package:jobboard/screens/auth_screens/login_screen.dart';
 import 'package:jobboard/utils/helper.dart';
 import 'package:jobboard/utils/local_storage.dart';
 import 'package:flutter/material.dart';

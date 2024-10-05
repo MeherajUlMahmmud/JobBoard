@@ -1,13 +1,16 @@
-import 'package:jobboard/models/user.dart';
-import 'package:jobboard/providers/user_provider.dart';
-import 'package:jobboard/screens/auth_screens/LoginScreen.dart';
-import 'package:jobboard/screens/main_screens/MainScreen.dart';
-import 'package:jobboard/utils/local_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../models/user.dart';
+import '../../providers/user_data_provider.dart';
+import '../../utils/constants.dart';
+import '../../utils/local_storage.dart';
+import '../auth_screens/login_screen.dart';
+import '../main_screens/main_screen.dart';
+
 class SplashScreen extends StatefulWidget {
-  static const routeName = "/";
+  static const routeName = Constants.splashScreenRouteName;
+
   const SplashScreen({Key? key}) : super(key: key);
 
   @override
@@ -55,7 +58,7 @@ class _SplashScreenState extends State<SplashScreen> {
     return Scaffold(
       body: Center(
         child: Text(
-          "JobBoard",
+          Constants.appName,
           style: TextStyle(
             fontSize: 40,
             fontWeight: FontWeight.bold,

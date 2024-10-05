@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:jobboard/providers/user_provider.dart';
-import 'package:jobboard/screens/main_screens/SearchScreen.dart';
-import 'package:jobboard/widgets/custom_gap.dart';
-import 'package:jobboard/widgets/job_tile.dart';
-import 'package:jobboard/widgets/show_all_btn.dart';
+
+import '../providers/user_data_provider.dart';
+import '../widgets/custom_gap.dart';
+import '../widgets/job_tile.dart';
+import '../widgets/show_all_btn.dart';
+import 'main_screens/search_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   static const routeName = '/home';
@@ -13,10 +13,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  late UserProvider userProvider;
-  late String accessToken;
   late String userId;
-  late bool isApplicant, isOrganiation;
+  late bool isApplicant, isOrganization;
 
   TextEditingController titleController = TextEditingController();
 
@@ -28,21 +26,15 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
 
-    userProvider = Provider.of<UserProvider>(
-      context,
-      listen: false,
-    );
-
     setState(() {
-      accessToken = userProvider.tokens['access'].toString();
-      userId = userProvider.userData!.id.toString();
-      isApplicant = userProvider.userData!.isApplicant!;
-      isOrganiation = userProvider.userData!.isOrganization!;
+      userId = UserProvider().userData!.id.toString();
+      isApplicant = UserProvider().userData!.isApplicant!;
+      isOrganization = UserProvider().userData!.isOrganization!;
     });
 
     if (isApplicant == true) {
       fetchApplicantData();
-    } else if (isOrganiation == true) {
+    } else if (isOrganization == true) {
       fetchOrganizationData();
     } else {
       setState(() {
@@ -67,8 +59,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    double width = MediaQuery.of(context).size.width;
-
     return Scaffold(
       body: SafeArea(
         child: isLoading

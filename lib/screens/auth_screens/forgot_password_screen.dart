@@ -1,18 +1,19 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:jobboard/apis/auth.dart';
-import 'package:jobboard/screens/auth_screens/LoginScreen.dart';
-import 'package:jobboard/screens/auth_screens/OTPScreen.dart';
-import 'package:jobboard/utils/helper.dart';
-import 'package:jobboard/utils/local_storage.dart';
-import 'package:jobboard/widgets/bottom_widget.dart';
-import 'package:jobboard/widgets/custom_button.dart';
-import 'package:jobboard/widgets/custom_text_form_field.dart';
-import 'package:jobboard/widgets/top_widget.dart';
+
+import '../../utils/constants.dart';
+import '../../utils/local_storage.dart';
+import '../../widgets/bottom_widget.dart';
+import '../../widgets/custom_button.dart';
+import '../../widgets/custom_text_form_field.dart';
+import '../../widgets/top_widget.dart';
+import 'login_screen.dart';
+import 'otp_screen.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
-  static const routeName = '/forgot-password';
+  static const routeName = Constants.forgotPasswordScreenRouteName;
+
   const ForgotPasswordScreen({super.key});
 
   @override

@@ -1,5 +1,5 @@
-import 'package:jobboard/models/applicant.dart';
-import 'package:jobboard/models/organizaton.dart';
+import 'applicant.dart';
+import 'organization.dart';
 
 class UserBase {
   int? id;
